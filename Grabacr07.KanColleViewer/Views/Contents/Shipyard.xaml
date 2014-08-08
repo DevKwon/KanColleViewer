@@ -10,7 +10,8 @@
 			 xmlns:models="clr-namespace:Grabacr07.KanColleViewer.Models"
 			 xmlns:viewModels="clr-namespace:Grabacr07.KanColleViewer.ViewModels.Contents"
 			 mc:Ignorable="d"
-			 d:DesignWidth="650"
+			 d:DesignWidth="640"
+			 Width="640"
 			 d:DesignHeight="400"
 			 d:DataContext="{d:DesignInstance viewModels:ShipyardViewModel}">
 	<UserControl.Resources>
@@ -79,7 +80,7 @@
 		<StackPanel VerticalAlignment="Top"
 					d:DataContext="{d:DesignData /SampleData/ShipyardViewModelSampleData.xaml}">
 			<GroupBox Header="입거"
-					  Margin="10,0">
+					  Margin="10,10,10,0">
 				<Grid>
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition />
@@ -224,7 +225,7 @@
 					  Margin="10">
 				<Grid>
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition />
+						<ColumnDefinition Width="Auto" />
 						<ColumnDefinition Width="Auto" />
 					</Grid.ColumnDefinitions>
 
@@ -241,8 +242,6 @@
 								</Grid.Resources>
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="Auto"
-													  SharedSizeGroup="Number" />
-									<ColumnDefinition Width="Auto"
 													  SharedSizeGroup="ShipName" />
 									<ColumnDefinition Width="Auto"
 													  SharedSizeGroup="CompleteTime" />
@@ -251,13 +250,13 @@
 								</Grid.ColumnDefinitions>
 
 								<TextBlock Grid.Row="0"
-										   Grid.Column="1"
+										   Grid.Column="0"
 										   Text="{Binding Resources.Dockyard_ShipName, Source={x:Static models:ResourceService.Current}, Mode=OneWay}" />
 								<TextBlock Grid.Row="0"
-										   Grid.Column="2"
+										   Grid.Column="1"
 										   Text="{Binding Resources.Dockyard_TimeComplete, Source={x:Static models:ResourceService.Current}, Mode=OneWay}" />
 								<TextBlock Grid.Row="0"
-										   Grid.Column="3"
+										   Grid.Column="2"
 										   Text="{Binding Resources.Dockyard_TimeRemaining, Source={x:Static models:ResourceService.Current}, Mode=OneWay}" />
 							</Grid>
 						</Border>
@@ -278,8 +277,6 @@
 										<Grid>
 											<Grid.ColumnDefinitions>
 												<ColumnDefinition Width="Auto"
-																  SharedSizeGroup="Number" />
-												<ColumnDefinition Width="Auto"
 																  SharedSizeGroup="ShipName" />
 												<ColumnDefinition Width="Auto"
 																  SharedSizeGroup="CompleteTime" />
@@ -287,22 +284,21 @@
 																  SharedSizeGroup="RemainingTime" />
 											</Grid.ColumnDefinitions>
 
-											<TextBlock Text="{Binding Id, Mode=OneWay}" />
 											<TextBlock x:Name="ShipName"
-													   Grid.Column="1"
+													   Grid.Column="0"
 													   Text="{Binding Ship, Mode=OneWay}"
 													   Style="{DynamicResource EmphaticTextStyleKey}"
 													   Margin="8,0" />
 											<TextBlock x:Name="CompleteTime"
-													   Grid.Column="2"
+													   Grid.Column="1"
 													   Text="{Binding CompleteTime, Mode=OneWay}" />
 											<TextBlock x:Name="RemainingTime"
-													   Grid.Column="3"
+													   Grid.Column="2"
 													   Text="{Binding Remaining, Mode=OneWay}" />
 
 											<TextBlock x:Name="Message"
-													   Grid.Column="2"
-													   Grid.ColumnSpan="2"
+													   Grid.Column="0"
+													   Grid.ColumnSpan="3"
 													   Text="{Binding Resources.Dockyard_Unused, Source={x:Static models:ResourceService.Current}, Mode=OneWay}"
 													   Style="{DynamicResource EmphaticTextStyleKey}"
 													   Foreground="{DynamicResource ForegroundBrushKey}"

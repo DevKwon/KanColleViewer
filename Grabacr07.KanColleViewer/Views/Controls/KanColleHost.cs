@@ -24,7 +24,7 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 
 		private const string PART_ContentHost = "PART_ContentHost";
 		private static readonly Size kanColleSize = new Size(800.0, 480.0);
-		private static readonly Size browserSize = new Size(960.0, 572.0);
+		private static readonly Size browserSize = new Size(800.0, 480.0);
 		public static KanColleHost Current
 		{
 			get { return current; }
@@ -113,7 +113,7 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 
 		#endregion
 
-
+		
 		public KanColleHost()
 		{
 			this.Loaded += (sender, args) => this.Update();
@@ -150,17 +150,8 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			else
 			{
 				this.WebBrowser.Width = double.NaN;
-				if (!EnableResizing)//리사이징이 꺼져있을때는 100%해상도인 800,480을 최소값으로
-				{
-					Size SmallbrowserSize = new Size(800.0, 480.0);
-					this.WebBrowser.Height = (SmallbrowserSize.Height * (zoomFactor / dpi.ScaleY)) / dpi.ScaleY;
-					this.MinWidth = (SmallbrowserSize.Width * (zoomFactor / dpi.ScaleX)) / dpi.ScaleX;
-				}
-				else
-				{
-					this.WebBrowser.Height = (browserSize.Height * (zoomFactor / dpi.ScaleY)) / dpi.ScaleY;
-					this.MinWidth = (browserSize.Width * (zoomFactor / dpi.ScaleX)) / dpi.ScaleX;
-				}
+				this.WebBrowser.Height = (browserSize.Height * (zoomFactor / dpi.ScaleY)) / dpi.ScaleY;
+				this.MinWidth = (browserSize.Width * (zoomFactor / dpi.ScaleX)) / dpi.ScaleX;
 			}
 		}
 
@@ -202,10 +193,11 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			var window = Window.GetWindow(this.WebBrowser);
 			if (EnableResizing)
 			{
-				if (window != null)
+				if (window != null && SystemParameters.FullPrimaryScreenWidth <= 1440)
 				{
-					window.Width = this.WebBrowser.Width;
+					window.Width = SystemParameters.FullPrimaryScreenWidth;
 				}
+				else if (window != null) window.Width = 1440;
 			}
 		}
 
@@ -232,7 +224,7 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 					{
 						target.createStyleSheet().cssText = Properties.Settings.Default.OverrideStyleSheet;
 						this.styleSheetApplied = true;
-						return;
+						return;			
 					}
 				}
 			}

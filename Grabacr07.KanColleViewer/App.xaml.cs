@@ -85,7 +85,7 @@ namespace Grabacr07.KanColleViewer
 		{
 			CriticalDialog criticalDialog = new CriticalDialog();
 			criticalDialog.Left = App.Current.MainWindow.Left + 95.0;
-			criticalDialog.Top = App.Current.MainWindow.Top + 165.0;
+			criticalDialog.Top = App.Current.MainWindow.Top + 215.0;
 			criticalDialog.Show();
 		}
 		protected override void OnExit(ExitEventArgs e)

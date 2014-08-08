@@ -10,15 +10,16 @@
 				   xmlns:properties="clr-namespace:Grabacr07.KanColleViewer.Properties"
 				   xmlns:views="clr-namespace:Grabacr07.KanColleViewer.Views"
 				   xmlns:viewModels="clr-namespace:Grabacr07.KanColleViewer.ViewModels"
+				   xmlns:converters="clr-namespace:Grabacr07.KanColleViewer.Views.Converters"
 				   xmlns:behaviors="clr-namespace:Grabacr07.KanColleViewer.Views.Behaviors"
 				   xmlns:controls="clr-namespace:Grabacr07.KanColleViewer.Views.Controls"
 				   xmlns:models="clr-namespace:Grabacr07.KanColleViewer.Models"
 				   mc:Ignorable="d"
 				   d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
 				   Title="{Binding Title}"
-				   Width="960"
+				   Width="1440"
 				   Height="945"
-				   MinWidth="{Binding ElementName=KanColleHost, Path=MinWidth}"
+				   MaxWidth="{x:Static SystemParameters.FullPrimaryScreenWidth}"
 				   Topmost="{Binding TopMost}"
 				   FontSize="12"
 				   Background="{DynamicResource ThemeBrushKey}"
@@ -30,6 +31,21 @@
 	<Window.InputBindings>
 		<KeyBinding Key="F5" Command="{Binding RefreshNavigator}" />
 	</Window.InputBindings>
+
+	<metro:MetroWindow.Resources>
+		<converters:AdjustConverter x:Key="AdjustConverter" />
+		<converters:PreviewSizeConverter x:Key="PreviewSizeConverter" />
+	</metro:MetroWindow.Resources>
+
+
+	<metro:MetroWindow.MinHeight>
+		<Binding ElementName="KanColleHost"
+                 Path="ActualHeight"
+                 Converter="{StaticResource AdjustConverter}"
+                 ConverterParameter="108"
+                 Mode="OneWay" />
+	</metro:MetroWindow.MinHeight>
+
 
 	<i:Interaction.Triggers>
 		<livet:InteractionMessageTrigger Messenger="{Binding Messenger}"
@@ -44,6 +60,7 @@
 
 	<Grid>
 		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 			<RowDefinition Height="23" />
@@ -86,15 +103,29 @@
 			</Grid>
 		</Border>
 		<!-- #endregion -->
+		<ContentControl Content="{Binding Content}" Name="Info" Grid.Row="1">
+			<ContentControl.Resources>
+				<DataTemplate DataType="{x:Type viewModels:StartContentViewModel}">
+					<Border ClipToBounds="True" Width="Auto">
+						<views:BrowserNavigator Margin="6,4,6,8"
+									VerticalAlignment="Top" />
+					</Border>
+				</DataTemplate>
+				<DataTemplate DataType="{x:Type viewModels:MainContentViewModel}">
+					<views:Info Margin="4,5" />
+				</DataTemplate>
+			</ContentControl.Resources>
 
-		<Grid Grid.Row="1">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="*" />
-			</Grid.RowDefinitions>
+		</ContentControl>
+		<Grid Grid.Row="2">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
 
-			<controls:KanColleHost x:Name="KanColleHost"
-								   ZoomFactor="{Binding Settings.BrowserZoomFactor.Current}">
+			<controls:KanColleHost Grid.Column="0" x:Name="KanColleHost"
+								   ZoomFactor="{Binding Settings.BrowserZoomFactor.Current}"
+								   VerticalAlignment="Top">
 				<i:Interaction.Triggers>
 					<livet:InteractionMessageTrigger Messenger="{Binding Messenger}"
 													 MessageKey="WebBrowser/Zoom">
@@ -115,23 +146,30 @@
 					</i:Interaction.Triggers>
 				</WebBrowser>
 			</controls:KanColleHost>
-
-			<ContentControl Grid.Row="1"
+			<DockPanel Grid.Column="1">
+				<ScrollViewer HorizontalScrollBarVisibility="Auto"
+                               VerticalScrollBarVisibility="Auto">
+					<ContentControl
 							Content="{Binding Content}">
-				<ContentControl.Resources>
-					<DataTemplate DataType="{x:Type viewModels:StartContentViewModel}">
-						<views:StartContent />
-					</DataTemplate>
+						<ContentControl.Resources>
+							<DataTemplate DataType="{x:Type viewModels:StartContentViewModel}">
+								<ScrollViewer HorizontalScrollBarVisibility="Auto"
+											  VerticalScrollBarVisibility="Auto">
+									<views:StartContent />
+								</ScrollViewer>
+							</DataTemplate>
 
-					<DataTemplate DataType="{x:Type viewModels:MainContentViewModel}">
-						<views:MainContent />
-					</DataTemplate>
-				</ContentControl.Resources>
-			</ContentControl>
+							<DataTemplate DataType="{x:Type viewModels:MainContentViewModel}">
+								<views:MainContent ScrollViewer.HorizontalScrollBarVisibility="Auto" />
+							</DataTemplate>
+						</ContentControl.Resources>
+					</ContentControl>
+				</ScrollViewer>
+			</DockPanel>
 		</Grid>
 
 		<!-- region Status area -->
-		<Grid Grid.Row="2"
+		<Grid Grid.Row="3"
 			  Background="{DynamicResource AccentBrushKey}"
 			  Panel.ZIndex="100">
 			<Grid.ColumnDefinitions>
