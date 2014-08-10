@@ -13,6 +13,7 @@ namespace Grabacr07.KanColleViewer.Plugins
 	[ExportMetadata("Description", "기존 플러그인의 개조 버전입니다. 토스트,툴팁 알림에 원하는 소리를 설정할 수 있습니다.")]
 	[ExportMetadata("Version", "1.0")]
 	[ExportMetadata("Author", "@Grabacr07,@Freyya312")]
+
 	public class WindowsNotifier : INotifier
 	{
 		private readonly INotifier notifier;
