@@ -31,46 +31,48 @@
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 
-		<Grid Background="{DynamicResource ActiveBackgroundBrushKey}">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto" />
-				<ColumnDefinition Width="Auto" />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
+		<ScrollViewer VerticalScrollBarVisibility="Hidden" PanningMode="Both">
+			<Grid Background="{DynamicResource ActiveBackgroundBrushKey}">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
 
-			<metro:TabView ItemsSource="{Binding TabItems}"
+				<metro:TabView ItemsSource="{Binding TabItems}"
 								   SelectedValue="{Binding SelectedItem}">
-				<metro:TabView.Template>
-					<ControlTemplate TargetType="{x:Type metro:TabView}">
-						<StackPanel Background="{TemplateBinding Background}">
-							<StackPanel Orientation="Horizontal" IsItemsHost="True"></StackPanel>
-						</StackPanel>
-					</ControlTemplate>
+					<metro:TabView.Template>
+						<ControlTemplate TargetType="{x:Type metro:TabView}">
+							<StackPanel Background="{TemplateBinding Background}">
+								<StackPanel Orientation="Horizontal" IsItemsHost="True"></StackPanel>
+							</StackPanel>
+						</ControlTemplate>
 
-				</metro:TabView.Template>
-			</metro:TabView>
+					</metro:TabView.Template>
+				</metro:TabView>
 
-			<Rectangle Grid.Column="1"
+				<Rectangle Grid.Column="1"
 							   Height="20"
 							   Margin="2,10"
 							   Fill="{DynamicResource InactiveForegroundBrushKey}"
 							   Opacity="0.5" />
 
-			<metro:TabView Grid.Column="2"
+				<metro:TabView Grid.Column="2"
 								   ItemsSource="{Binding SystemTabItems}"
 								   SelectedValue="{Binding SelectedItem}">
-				<metro:TabView.Template>
-					<ControlTemplate TargetType="{x:Type metro:TabView}">
-						<StackPanel Background="{TemplateBinding Background}">
-							<StackPanel Orientation="Horizontal" IsItemsHost="True"></StackPanel>
-						</StackPanel>
-					</ControlTemplate>
+					<metro:TabView.Template>
+						<ControlTemplate TargetType="{x:Type metro:TabView}">
+							<StackPanel Background="{TemplateBinding Background}">
+								<StackPanel Orientation="Horizontal" IsItemsHost="True"></StackPanel>
+							</StackPanel>
+						</ControlTemplate>
 
-				</metro:TabView.Template>
-			</metro:TabView>
-		</Grid>
+					</metro:TabView.Template>
+				</metro:TabView>
+			</Grid>
+		</ScrollViewer>
 
-		<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" PanningMode="Both">
+		<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" PanningMode="Both">
 			<Grid>
 				<ItemsControl ItemsSource="{Binding TabItems}">
 					<ItemsControl.ItemsPanel>

@@ -147,8 +147,6 @@
 				</WebBrowser>
 			</controls:KanColleHost>
 			<DockPanel Grid.Column="1">
-				<ScrollViewer HorizontalScrollBarVisibility="Auto"
-                               VerticalScrollBarVisibility="Auto">
 					<ContentControl
 							Content="{Binding Content}">
 						<ContentControl.Resources>
@@ -164,7 +162,6 @@
 							</DataTemplate>
 						</ContentControl.Resources>
 					</ContentControl>
-				</ScrollViewer>
 			</DockPanel>
 		</Grid>
 

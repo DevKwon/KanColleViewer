@@ -10,8 +10,7 @@
 			 xmlns:models="clr-namespace:Grabacr07.KanColleViewer.Models"
 			 xmlns:viewModels="clr-namespace:Grabacr07.KanColleViewer.ViewModels.Contents"
 			 mc:Ignorable="d"
-			 d:DesignWidth="640"
-			 Width="640"
+			 d:DesignWidth="580"
 			 d:DesignHeight="400"
 			 d:DataContext="{d:DesignInstance viewModels:ShipyardViewModel}">
 	<UserControl.Resources>

@@ -13,8 +13,8 @@
 			 xmlns:fleets="clr-namespace:Grabacr07.KanColleViewer.ViewModels.Contents.Fleets"
 			 xmlns:contents="clr-namespace:Grabacr07.KanColleViewer.Views.Contents"
 			 mc:Ignorable="d"
-			 Width="640"
-			 d:DesignWidth="640"
+			 Width="580"
+			 d:DesignWidth="580"
 			 d:DesignHeight="400"
 			 d:DataContext="{d:DesignInstance fleets:FleetsViewModel}">
 

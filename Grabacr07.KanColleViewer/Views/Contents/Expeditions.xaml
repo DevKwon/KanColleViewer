@@ -15,8 +15,8 @@
 			 xmlns:root="clr-namespace:Grabacr07.KanColleViewer"
 			 xmlns:models="clr-namespace:Grabacr07.KanColleViewer.Models"
 			 mc:Ignorable="d"
-			 Width="640"
-			 d:DesignWidth="640"
+			 Width="580"
+			 d:DesignWidth="580"
 			 d:DesignHeight="300"
 			 d:DataContext="{d:DesignInstance vmContents:ExpeditionsViewModel}">
 	<UserControl.Resources>
