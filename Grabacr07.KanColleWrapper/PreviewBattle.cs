@@ -51,6 +51,8 @@ namespace Grabacr07.KanColleWrapper.Models
 			proxy.api_req_combined_battle_airbattle.TryParse<kcsapi_battle>().Subscribe(x => this.AirBattle(x.Data));
 			proxy.api_req_combined_battle_battle.TryParse<kcsapi_battle>().Subscribe(x => this.Battle(true, x.Data));
 			proxy.api_req_combined_battle_midnight_battle.TryParse<kcsapi_midnight_battle>().Subscribe(x => this.MidBattle(true, x.Data));
+			proxy.api_req_combined_battle_battle_water.TryParse<kcsapi_battle>().Subscribe(x => this.Battle(true, x.Data));
+			proxy.api_req_map_start.Subscribe(x => this.Cleared());
 
 			proxy.api_req_sortie_battleresult.TryParse().Subscribe(x => this.Result());
 			proxy.api_req_combined_battle_battleresult.TryParse().Subscribe(x => this.Result());
@@ -63,7 +65,12 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// <param name="cleared"></param>
 		private void Cleared()
 		{
-			if (this.IsCombineCritical || this.IsCritical) this.CriticalCleared();
+			if (this.IsCombineCritical || this.IsCritical)
+			{
+				this.CriticalCleared();
+				this.IsCritical = false;
+				this.IsCombineCritical = false;
+			}
 		}
 		/// <summary>
 		/// battleresult창이 떴을때 IsCritical이 True이면 CriticalCondition이벤트를 발생
@@ -83,13 +90,6 @@ namespace Grabacr07.KanColleWrapper.Models
 				this.CriticalCondition();
 				this.IsCritical = true;
 			}
-		}
-		/// <summary>
-		/// 대파상태 강제제거
-		/// </summary>
-		public void ClearFleets()
-		{
-			this.CriticalCleared();
 		}
 		/// <summary>
 		/// 연합함대를 사용한 전투에서 항공전을 처리하는데 사용.
