@@ -28,10 +28,6 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// 전투가 끝나고 모항에 돌아왔는지를 채크
 		/// </summary>
 		private bool BattleEnd { get; set; }
-		/// <summary>
-		/// 연합함대가 크리티컬이 맞는지 조회하는 부분
-		/// </summary>
-		private bool IsCombineCritical { get; set; }
 
 		public delegate void CriticalEventHandler();
 		/// <summary>
@@ -70,11 +66,10 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// <param name="IsEnd">전투가 끝난건지 안 끝난건지의 여부를 입력</param>
 		private void Cleared(bool IsEnd)
 		{
-			if (this.IsCombineCritical || this.IsCritical)
+			if (this.IsCritical)
 			{
 				this.CriticalCleared();
 				this.IsCritical = false;
-				this.IsCombineCritical = false;
 				
 				if (IsEnd) this.BattleEnd = true;
 				else this.BattleEnd = false;
@@ -86,14 +81,14 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// <param name="results"></param>
 		private void Result()
 		{
-			if (this.IsCombineCritical || this.IsCritical) this.CriticalCondition();
+			if (this.IsCritical) this.CriticalCondition();
 		}
 		/// <summary>
 		/// 대파알림 계산이 잘못되었거나 문제가 생겼을때를 대비한 코드.
 		/// </summary>
 		public void AfterResult()
 		{
-			if (!this.IsCritical && !this.IsCombineCritical)
+			if (!this.IsCritical)
 			{
 				if (!this.BattleEnd)
 				{
@@ -109,7 +104,6 @@ namespace Grabacr07.KanColleWrapper.Models
 		private void AirBattle(kcsapi_battle battle)
 		{
 			this.IsCritical = false;
-			this.IsCombineCritical = false;
 			List<listup> lists = new List<listup>();
 			List<int> CurrentHPList = new List<int>();
 			List<int> HPList = new List<int>();
@@ -122,7 +116,6 @@ namespace Grabacr07.KanColleWrapper.Models
 			if (battle.api_kouku != null && battle.api_kouku.api_stage3 != null)
 			{
 				int[] numlist = battle.api_kouku.api_stage3.api_frai_flag;
-				//int[] numlistCl = battle.api_kouku.api_stage3.api_fcl_flag;//이건 뭐지?
 
 				decimal[] damlist = battle.api_kouku.api_stage3.api_fdam;
 
@@ -135,7 +128,6 @@ namespace Grabacr07.KanColleWrapper.Models
 				if (battle.api_kouku != null && battle.api_kouku.api_stage3_combined != null)
 				{
 					numlist = battle.api_kouku.api_stage3_combined.api_frai_flag;
-					//numlistCl = battle.api_kouku.api_stage3_combined.api_fcl_flag;//이건 뭐지?
 
 					damlist = battle.api_kouku.api_stage3_combined.api_fdam;
 
@@ -153,7 +145,6 @@ namespace Grabacr07.KanColleWrapper.Models
 			{
 				int[] numlist = battle.api_kouku2.api_stage3.api_frai_flag;//뇌격
 				int[] numlistBak = battle.api_kouku2.api_stage3.api_fbak_flag;//폭격
-				//int[] numlistCl = battle.api_kouku2.api_stage3.api_fcl_flag;//이건 뭐지?
 
 				decimal[] damlist = battle.api_kouku2.api_stage3.api_fdam;
 
@@ -167,7 +158,6 @@ namespace Grabacr07.KanColleWrapper.Models
 				{
 					numlist = battle.api_kouku2.api_stage3_combined.api_frai_flag;//뇌격
 					numlistBak = battle.api_kouku2.api_stage3_combined.api_fbak_flag;//폭격
-					//numlistCl = battle.api_kouku2.api_stage3_combined.api_fcl_flag;//이건 뭐지?
 
 					damlist = battle.api_kouku2.api_stage3_combined.api_fdam;
 					for (int i = 0; i < battle.api_kouku2.api_stage3_combined.api_frai_flag.Count(); i++)//컴바인 함대 플래그
@@ -182,14 +172,14 @@ namespace Grabacr07.KanColleWrapper.Models
 				}//연합함대 리스트 작성 끝
 			}
 			//api_kouku끝
-			BattleCalc(false,HPList, MHPList, lists, CurrentHPList, battle.api_maxhps, battle.api_nowhps);
+			BattleCalc(HPList, MHPList, lists, CurrentHPList, battle.api_maxhps, battle.api_nowhps);
 
 			//재활용 위해 초기화
 			CurrentHPList = new List<int>();
 			HPList = new List<int>();
 			MHPList = new List<int>();
 
-			BattleCalc(true,HPList, MHPList, Combinelists, CurrentHPList, battle.api_maxhps_combined, battle.api_nowhps_combined);
+			BattleCalc(HPList, MHPList, Combinelists, CurrentHPList, battle.api_maxhps_combined, battle.api_nowhps_combined);
 		}
 		/// <summary>
 		/// 일반 포격전, 개막뇌격, 개막 항공전등을 계산.
@@ -200,7 +190,6 @@ namespace Grabacr07.KanColleWrapper.Models
 		private void Battle(bool IsCombined,bool IsWater, kcsapi_battle battle)
 		{
 			this.IsCritical = false;
-			this.IsCombineCritical = false;
 			List<int> CurrentHPList = new List<int>();
 			List<listup> lists = new List<listup>();
 			List<int> HPList = new List<int>();
@@ -237,9 +226,9 @@ namespace Grabacr07.KanColleWrapper.Models
 			{
 				int[] numlist = battle.api_raigeki.api_erai;
 				decimal[] damlist = battle.api_raigeki.api_eydam;
-				if (!IsCombined && battle.api_hougeki1 != null) 
+				if (!IsCombined) 
 					DecimalListmake(numlist, damlist, lists);
-				else if (IsCombined && battle.api_hougeki1 != null)//1차 포격전은 2함대만 맞을지도...?
+				else if (IsCombined)
 					DecimalListmake(numlist, damlist, Combinelists);
 			}
 			//뇌격전 끝
@@ -248,7 +237,6 @@ namespace Grabacr07.KanColleWrapper.Models
 			if (battle.api_kouku != null && battle.api_kouku.api_stage3 != null)
 			{
 				int[] numlist = battle.api_kouku.api_stage3.api_frai_flag;//뇌격
-				//int[] numlistCl = battle.api_kouku.api_stage3.api_fcl_flag;//이건 뭐지?
 
 				decimal[] damlist = battle.api_kouku.api_stage3.api_fdam;
 				ChangeKoukuFlagToNumber(battle.api_kouku.api_stage3.api_frai_flag,
@@ -261,7 +249,6 @@ namespace Grabacr07.KanColleWrapper.Models
 					if (battle.api_kouku.api_stage3_combined != null)
 					{
 						numlist = battle.api_kouku.api_stage3_combined.api_frai_flag;//뇌격
-						//numlistCl = battle.api_kouku.api_stage3_combined.api_fcl_flag;//이건 뭐지?
 
 						damlist = battle.api_kouku.api_stage3_combined.api_fdam;
 						ChangeKoukuFlagToNumber(battle.api_kouku.api_stage3_combined.api_frai_flag,
@@ -281,16 +268,16 @@ namespace Grabacr07.KanColleWrapper.Models
 				DecimalListmake(numlist, damlist, lists);
 			}
 			//개막전 끝
+			if (!IsCombined) BattleCalc(HPList, MHPList, lists, CurrentHPList, battle.api_maxhps, battle.api_nowhps);
 
-			BattleCalc(false,HPList, MHPList, lists, CurrentHPList, battle.api_maxhps, battle.api_nowhps);
-
-			if (IsCombined)//연합함대인경우 연산을 한번 더 시행
+			else if (IsCombined)//연합함대인경우 연산을 한번 더 시행
 			{
+				BattleCalc(HPList, MHPList, lists, CurrentHPList, battle.api_maxhps, battle.api_nowhps);
 				//재활용 위해 초기화.
 				CurrentHPList = new List<int>();
 				HPList = new List<int>();
 				MHPList = new List<int>();
-				BattleCalc(true,HPList, MHPList, Combinelists, CurrentHPList, battle.api_maxhps_combined, battle.api_nowhps_combined);
+				BattleCalc(HPList, MHPList, Combinelists, CurrentHPList, battle.api_maxhps_combined, battle.api_nowhps_combined);
 			}
 		}
 		/// <summary>
@@ -300,8 +287,8 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// <param name="IsCombined">연합함대인지 아닌지 입력합니다.연합함대인경우 True입니다.</param>
 		private void MidBattle(bool IsCombined, kcsapi_midnight_battle battle)
 		{
-			this.IsCritical = false;
-			this.IsCombineCritical = false;
+			if (!IsCombined) this.IsCritical = false;
+
 			List<listup> lists = new List<listup>();
 			List<int> HPList = new List<int>();
 			List<int> MHPList = new List<int>();
@@ -311,9 +298,9 @@ namespace Grabacr07.KanColleWrapper.Models
 				ObjectListmake(battle.api_hougeki.api_df_list, battle.api_hougeki.api_damage, lists);
 
 			if (IsCombined && battle.api_maxhps_combined != null && battle.api_nowhps_combined != null)
-				BattleCalc(true,HPList, MHPList, lists, CurrentHPList, battle.api_maxhps_combined, battle.api_nowhps_combined);
+				BattleCalc(HPList, MHPList, lists, CurrentHPList, battle.api_maxhps_combined, battle.api_nowhps_combined);
 			else
-				BattleCalc(false,HPList, MHPList, lists, CurrentHPList, battle.api_maxhps, battle.api_nowhps);
+				BattleCalc(HPList, MHPList, lists, CurrentHPList, battle.api_maxhps, battle.api_nowhps);
 		}
 
 		/// <summary>
@@ -326,7 +313,7 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// <param name="Maxhps">api_maxhps를 가져온다.</param>
 		/// <param name="NowHps">api_nowhps를 가져온다.</param>
 		/// <param name="IsCombined">연합함대인지 설정</param>
-		private void BattleCalc(bool IsCombined,List<int> HPList, List<int> MHPList, List<listup> lists, List<int> CurrentHPList, int[] Maxhps, int[] NowHps)
+		private void BattleCalc(List<int> HPList, List<int> MHPList, List<listup> lists, List<int> CurrentHPList, int[] Maxhps, int[] NowHps)
 		{
 			//총 HP와 현재 HP의 리스트를 작성한다. 빈칸과 적은 제외. 여기서 적까지 포함시키고 별도의 함수를 추가하면 전투 미리보기 구현도 가능
 			for (int i = 0; i < 7; i++)
@@ -367,8 +354,9 @@ namespace Grabacr07.KanColleWrapper.Models
 			{
 				if (t)
 				{
-					if (!IsCombined) this.IsCritical = true;
-					else if (IsCombined) this.IsCombineCritical = true;
+					//if (!IsCombined) this.IsCritical = true;
+					//else if (IsCombined) this.IsCombineCritical = true;
+					this.IsCritical = true;
 					break;
 				}
 			}
