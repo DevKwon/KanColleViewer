@@ -72,7 +72,7 @@ namespace Grabacr07.KanColleWrapper
 			}
 
 			Log(LogType.ShipDrop, "{0},{1},{2},{3},{4}",DateTime.Now.ToString("yyyy/M/d H:mm"),ShipName,ShipType,
-				KanColleClient.Current.Translations.GetTranslation(br.api_enemy_info.api_deck_name, TranslationType.OperationSortie, br),
+				KanColleClient.Current.Translations.GetTranslation(br.api_enemy_info.api_deck_name, TranslationType.OperationSortie, br,-1),
 				br.api_win_rank);
 		}
 

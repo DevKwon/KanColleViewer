@@ -38,11 +38,11 @@ namespace Grabacr07.KanColleWrapper.Models
 		}
 		public string LvName
 		{
-			get { return "[Lv." + this.Level + "]  \t" + this.Info.Name; }
+			get { return "[Lv." + this.Level + "]  " + this.Info.Name; }
 		}
-		public string NameLv
+		public string Name
 		{
-			get { return string.Format("{0, -20} [Lv.{1}]", this.Info.Name, this.Level); }
+			get { return this.Info.Name; }
 		}
 		/// <summary>
 		/// 艦娘がロックされているかどうかを示

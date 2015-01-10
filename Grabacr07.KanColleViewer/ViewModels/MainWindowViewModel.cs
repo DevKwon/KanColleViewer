@@ -1,10 +1,12 @@
 ﻿using Grabacr07.KanColleViewer.Models;
 using Grabacr07.KanColleViewer.ViewModels.Messages;
 using Grabacr07.KanColleWrapper;
+using Grabacr07.KanColleWrapper.Models;
 using Livet;
 using Livet.EventListeners;
 using Livet.Messaging.Windows;
 using MetroRadiance;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Input;
 
@@ -156,7 +158,7 @@ namespace Grabacr07.KanColleViewer.ViewModels
 			});
 
 			this.UpdateMode();
-
+			//this.Tester();
 			_RefreshNavigator = new RelayCommand(Navigator.ReNavigate);
 		}
 
