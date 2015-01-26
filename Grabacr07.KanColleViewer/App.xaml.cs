@@ -48,7 +48,7 @@ namespace Grabacr07.KanColleViewer
 			KanColleClient.Current.Logger.EnableLogging = Settings.Current.EnableLogging;
 			KanColleClient.Current.EventMapHPChecker.EnableEventMapInfo = Settings.Current.EnableEventMapInfo;
 			KanColleClient.Current.PreviewBattle.EnableBattlePreview = Settings.Current.EnableBattlePreview;
-			KanColleClient.Current.PreviewBattle.IsDatalistClear = true;
+			KanColleClient.Current.PreviewBattle.IsCalculated = false;
 			// Initialize translations
 			KanColleClient.Current.Translations.EnableTranslations = Settings.Current.EnableTranslations;
 			KanColleClient.Current.Translations.EnableAddUntranslated = Settings.Current.EnableAddUntranslated;
@@ -84,13 +84,13 @@ namespace Grabacr07.KanColleViewer
 			this.MainWindow.Show();
 			//CriticalPupup();
 		}
-		public static void CriticalPupup()
-		{
-			CriticalDialog criticalDialog = new CriticalDialog();
-			criticalDialog.Left = App.Current.MainWindow.Left + 95.0;
-			criticalDialog.Top = App.Current.MainWindow.Top + 215.0;
-			criticalDialog.Show();
-		}
+		//public static void CriticalPupup()
+		//{
+		//	CriticalDialog criticalDialog = new CriticalDialog();
+		//	criticalDialog.Left = App.Current.MainWindow.Left + 95.0;
+		//	criticalDialog.Top = App.Current.MainWindow.Top + 165.0;
+		//	criticalDialog.Show();
+		//}
 		protected override void OnExit(ExitEventArgs e)
 		{
 			base.OnExit(e);

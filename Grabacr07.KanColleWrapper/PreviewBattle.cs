@@ -22,7 +22,7 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// 전투 미리보기가 켜져있는가. 켜져있는 경우는 true
 		/// </summary>
 		public bool EnableBattlePreview { get; set; }
-		public bool IsDatalistClear { get; set; }
+		public bool IsCalculated { get; set; }
 		/// <summary>
 		/// 내부에서 크리티컬이 맞는지 조회하는 부분
 		/// </summary>
@@ -81,7 +81,7 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// 전투결과를 CriticalPreviewPopup으로 보냅니다.
 		/// </summary>
 		/// <returns></returns>
-		public List<PreviewBattleResults> KanResult(int combinded=-1)
+		public List<PreviewBattleResults> KanResult(int combinded = -1)
 		{
 			if (!EnableBattlePreview) return null;
 			var Organization = KanColleClient.Current.Homeport.Organization;
@@ -117,7 +117,7 @@ namespace Grabacr07.KanColleWrapper.Models
 					}
 					if (Kan.HP.Maximum != 0 || Kan.HP.Current != 0) this.Results.Add(Kan);
 				}
-				
+
 			}
 			return this.Results;
 		}
@@ -246,23 +246,18 @@ namespace Grabacr07.KanColleWrapper.Models
 			this.IsCritical = false;
 			List<listup> lists = new List<listup>();
 			List<int> CurrentHPList = new List<int>();
-			if (EnableBattlePreview)
-			{
-				DataLists.EnemyID = null;
-				DataLists.EnemyID = battle.api_ship_ke;
-				DataLists.EnemyLv = null;
-				DataLists.EnemyLv = battle.api_ship_lv;
-				DataLists.DockId = battle.api_dock_id;
-			}
+
+			this.ResetEnemyInfo(battle);
+
 			try
 			{
 				if (battle.api_support_flag != 0) Support(battle.api_support_flag, battle, lists);
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine(ex);
 			}
-			
+
 
 			List<listup> Combinelists = new List<listup>();
 
@@ -397,7 +392,11 @@ namespace Grabacr07.KanColleWrapper.Models
 			BattleCalc(Combinelists, CurrentHPList, CombinePlusEnemyMaxHPs, CombinePlusEnemyNowHPs, true, false, false);
 			//BattleCalc(HPList, MHPList, Combinelists, CurrentHPList, battle.api_maxhps_combined, battle.api_nowhps_combined,true);
 
-			if (EnableBattlePreview) this.PreviewCriticalCondition();
+			if (EnableBattlePreview)
+			{
+				this.PreviewCriticalCondition();
+				this.IsCalculated = true;
+			}
 		}
 		/// <summary>
 		/// 일반 포격전, 개막뇌격, 개막 항공전등을 계산.
@@ -413,14 +412,7 @@ namespace Grabacr07.KanColleWrapper.Models
 			List<int> CurrentHPList = new List<int>();
 			List<listup> lists = new List<listup>();
 
-			if (EnableBattlePreview)
-			{
-				DataLists.EnemyID = null;
-				DataLists.EnemyID = battle.api_ship_ke;
-				DataLists.EnemyLv = null;
-				DataLists.EnemyLv = battle.api_ship_lv;
-				DataLists.DockId = battle.api_dock_id;
-			}
+			this.ResetEnemyInfo(battle);
 			try
 			{
 				if (battle.api_support_flag != 0) Support(battle.api_support_flag, battle, lists);
@@ -569,7 +561,11 @@ namespace Grabacr07.KanColleWrapper.Models
 				//BattleCalc(HPList, MHPList, Combinelists, CurrentHPList, battle.api_maxhps_combined, battle.api_nowhps_combined,true);
 
 			}
-			if (EnableBattlePreview) this.PreviewCriticalCondition();
+			if (EnableBattlePreview)
+			{
+				this.PreviewCriticalCondition();
+				this.IsCalculated = true;
+			}
 		}
 		/// <summary>
 		/// battle의 야전버전. Battle과 구조는 동일. 다만 전투의 양상이 조금 다르기때문에 분리. 연합함대와 아닌경우의 구분을 한다.
@@ -584,14 +580,8 @@ namespace Grabacr07.KanColleWrapper.Models
 			this.Combined = IsCombined;
 			List<listup> lists = new List<listup>();
 			List<int> CurrentHPList = new List<int>();
-			if (EnableBattlePreview)
-			{
-				DataLists.EnemyID = null;
-				DataLists.EnemyID = battle.api_ship_ke;
-				DataLists.EnemyLv = null;
-				DataLists.EnemyLv = battle.api_ship_lv;
-				DataLists.DockId = battle.api_deck_id;
-			}
+
+			this.ResetEnemyInfo(battle);
 
 			//포격전 리스트를 작성. 주간과 달리 1차 포격전밖에 없음.
 			if (battle.api_hougeki != null)
@@ -630,7 +620,11 @@ namespace Grabacr07.KanColleWrapper.Models
 				else
 					BattleCalc(lists, CurrentHPList, battle.api_maxhps, battle.api_nowhps, false, IsMidnight, IsPractice);
 			}
-			if (EnableBattlePreview) this.PreviewCriticalCondition();
+			if (EnableBattlePreview)
+			{
+				this.PreviewCriticalCondition();
+				this.IsCalculated = true;
+			}
 		}
 
 		/// <summary>
@@ -647,8 +641,7 @@ namespace Grabacr07.KanColleWrapper.Models
 		{
 			if (EnableBattlePreview)
 			{
-				this.IsDatalistClear = false;
-				
+
 				DataLists.ComCalResults.Clear();
 				DataLists.ComHpResults.Clear();
 				DataLists.ComMHpResults.Clear();
@@ -781,24 +774,30 @@ namespace Grabacr07.KanColleWrapper.Models
 					KanEveryCHP = KanEveryCHP + this.DataLists.FirstKanDamaged;
 					KanEveryMHP = KanEveryMHP + this.DataLists.FirstKanMaxHP;
 				}
-				double EnemyDamage = (double)EnemyEveryCHP / (double)EnemyEveryMHP;
-				double KanDamage = (double)KanEveryCHP / (double)KanEveryMHP;
+				decimal EnemyDamage = (decimal)EnemyEveryCHP / (decimal)EnemyEveryMHP;
+				decimal KanDamage = (decimal)KanEveryCHP / (decimal)KanEveryMHP;
 				if (IsMidnight)
 				{
-					EnemyDamage = (double)(EnemyEveryCHP + DataLists.EnemyDayBattleDamage) / (double)(EnemyEveryMHP + DataLists.EnemyDayBattleDamage);
-					KanDamage = (double)(KanEveryCHP + DataLists.KanDayBattleDamage) / (double)(KanEveryMHP + DataLists.KanDayBattleDamage);
+					EnemyDamage = (decimal)(EnemyEveryCHP + DataLists.EnemyDayBattleDamage) / (decimal)(EnemyEveryMHP + DataLists.EnemyDayBattleDamage);
+					KanDamage = (decimal)(KanEveryCHP + DataLists.KanDayBattleDamage) / (decimal)(KanEveryMHP + DataLists.KanDayBattleDamage);
 				}
 				else
 				{
 					DataLists.EnemyDayBattleDamage = EnemyEveryCHP;
 					DataLists.KanDayBattleDamage = KanEveryCHP;
 				}
-				//스위치를 전부 조작
+				//flag조작 시작
+
+
+				EnemyDamage = Math.Truncate(EnemyDamage * 1000) / 1000;
+				KanDamage = Math.Truncate(KanDamage * 1000) / 1000;
+
 				if (KanDamage != 0)
 				{
-					if (EnemyDamage / KanDamage > 2.5)
+					decimal CalcPercent = Math.Round(EnemyDamage / KanDamage, 1);
+					if (CalcPercent > 2.5m)
 						DataLists.IsOverDamage = true;//2.5배 초과 데미지
-					else if (EnemyDamage / KanDamage > 1)
+					else if (CalcPercent >= 1)
 						DataLists.IsMidDamage = true;//1초과 2.5이하
 					else DataLists.IsScratch = true;//1미만
 				}
@@ -808,7 +807,7 @@ namespace Grabacr07.KanColleWrapper.Models
 				if (KanDamage == 0) DataLists.IsKanDamaged = false;
 				else DataLists.IsKanDamaged = true;
 
-				if (DataLists.IsEnemyDamaged) if (EnemyDamage <= 0.001 && EnemyDamage > 0) DataLists.IsEnemyDamaged = false;
+				if (DataLists.IsEnemyDamaged) if (EnemyDamage <= 0.001m && EnemyDamage > 0) DataLists.IsEnemyDamaged = false;
 
 				if (EnemyEveryMHP - EnemyEveryCHP <= 0) DataLists.IsEnemyExterminated = true;//적 전멸
 				else DataLists.IsEnemyExterminated = false;
@@ -837,7 +836,7 @@ namespace Grabacr07.KanColleWrapper.Models
 				}
 				catch (Exception e)
 				{
-					DataLists.RankInt = -1; 
+					DataLists.RankInt = -1;
 					System.Diagnostics.Debug.WriteLine(e);
 				}
 			}
@@ -966,6 +965,7 @@ namespace Grabacr07.KanColleWrapper.Models
 					if (DataLists.IsEnemyDeadOverHalf) return 2;
 
 					if (DataLists.IsOverDamage) return 3;
+
 					else if (DataLists.IsMidDamage) return 4;
 					else if (DataLists.IsScratch) return 5;
 					else return -1;//예측불능
@@ -1015,6 +1015,34 @@ namespace Grabacr07.KanColleWrapper.Models
 				}
 
 				DecimalListmake(Numlist, Damage, lists, false);
+			}
+		}
+		private void ResetEnemyInfo(kcsapi_battle battle)
+		{
+			if (EnableBattlePreview)
+			{
+				int i = battle.api_ship_ke.Count();
+				DataLists.EnemyID = new int[i];
+				DataLists.EnemyID = battle.api_ship_ke;
+				i = battle.api_ship_lv.Count();
+				DataLists.EnemyLv = new int[i];
+				DataLists.EnemyLv = battle.api_ship_lv;
+
+				DataLists.DockId = battle.api_dock_id;
+			}
+		}
+		private void ResetEnemyInfo(kcsapi_midnight_battle battle)
+		{
+			if (EnableBattlePreview)
+			{
+				int i = battle.api_ship_ke.Count();
+				DataLists.EnemyID = new int[i];
+				DataLists.EnemyID = battle.api_ship_ke;
+				i = battle.api_ship_lv.Count();
+				DataLists.EnemyLv = new int[i];
+				DataLists.EnemyLv = battle.api_ship_lv;
+
+				DataLists.DockId = battle.api_deck_id;
 			}
 		}
 	}
